@@ -92,7 +92,7 @@
     "ws": "8.18.3"
   },
   "dependencies": {
-    "@dschz/polymarket-clob-order-utils": "^0.2.0",
+    "@dschz/polymarket-clob-order-utils": "^0.2.1",
     "@ethersproject/bignumber": "^5.8.0",
     "@ethersproject/constants": "^5.8.0",
     "@ethersproject/contracts": "^5.8.0",

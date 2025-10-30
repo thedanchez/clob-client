@@ -4,7 +4,7 @@
     "": {
       "name": "@dschz/polymarket-clob-client",
       "dependencies": {
-        "@dschz/polymarket-clob-order-utils": "^0.2.0",
+        "@dschz/polymarket-clob-order-utils": "^0.2.1",
         "@ethersproject/bignumber": "^5.8.0",
         "@ethersproject/constants": "^5.8.0",
         "@ethersproject/contracts": "^5.8.0",
@@ -75,7 +75,7 @@
 
     "@changesets/write": ["@changesets/write@0.4.0", "", { "dependencies": { "@changesets/types": "^6.1.0", "fs-extra": "^7.0.1", "human-id": "^4.1.1", "prettier": "^2.7.1" } }, "sha512-CdTLvIOPiCNuH71pyDu3rA+Q0n65cmAbXnwWH84rKGiFumFzkmHNT8KHTMEchcxN+Kl8I54xGUhJ7l3E7X396Q=="],
 
-    "@dschz/polymarket-clob-order-utils": ["@dschz/polymarket-clob-order-utils@0.2.0", "", { "dependencies": { "@ethersproject/providers": "^5.8.0", "@ethersproject/wallet": "^5.8.0", "@metamask/eth-sig-util": "^5.0.0" } }, "sha512-4+1oS0ZKE9oHLhssMKMOeIZcpD1FaTdvLAnkyZZYiTqolAE197PdrbJQRmgXLUd9G1hkXaSZSkYDMEi9JMjKCw=="],
+    "@dschz/polymarket-clob-order-utils": ["@dschz/polymarket-clob-order-utils@0.2.1", "", { "dependencies": { "@ethersproject/providers": "^5.8.0", "@ethersproject/wallet": "^5.8.0", "@metamask/eth-sig-util": "^5.0.0" } }, "sha512-KqIumgE0a98oSIxswpam0CqapDYT7pX7pLTsC2C/fCWfExmdHCd4DmFaphAKccR+fp968uKOat4lR1T4rSIy8w=="],
 
     "@emnapi/core": ["@emnapi/core@1.6.0", "", { "dependencies": { "@emnapi/wasi-threads": "1.1.0", "tslib": "^2.4.0" } }, "sha512-zq/ay+9fNIJJtJiZxdTnXS20PllcYMX3OE23ESc4HK/bdYu3cOWYVhsOhVnXALfU/uqJIxn5NBPd9z4v+SfoSg=="],
 

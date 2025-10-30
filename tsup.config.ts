@@ -6,9 +6,8 @@ export default defineConfig({
   name: "polymarket-clob-client",
   entry: ["src/index.ts"],
   format: ["esm"],
-  bundle: false,
+  bundle: true,
   clean: true,
-  external: [...Object.keys(pkg.dependencies)],
   dts: {
     footer: `declare module '${pkg.name}'`,
   },
