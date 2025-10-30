@@ -1,14 +1,7 @@
-/* eslint-disable max-len */
-import { describe, it, expect } from "bun:test";
-import {
-  decimalPlaces,
-  generateOrderBookSummaryHash,
-  isTickSizeSmaller,
-  orderToJson,
-  priceValid,
-  roundDown,
-} from "../src/utilities";
+import { Wallet } from "@ethersproject/wallet";
 import { Side as UtilsSide, SignatureType } from "@polymarket/order-utils";
+import { describe, expect, it } from "bun:test";
+
 import {
   Chain,
   type OrderBookSummary,
@@ -17,8 +10,15 @@ import {
   type UserMarketOrder,
   type UserOrder,
 } from "../src";
-import { Wallet } from "@ethersproject/wallet";
 import { createMarketOrder, createOrder } from "../src/order-builder/helpers";
+import {
+  decimalPlaces,
+  generateOrderBookSummaryHash,
+  isTickSizeSmaller,
+  orderToJson,
+  priceValid,
+  roundDown,
+} from "../src/utilities";
 
 describe("utilities", () => {
   describe("orderToJson", () => {

@@ -1,28 +1,29 @@
-import { describe, it, beforeEach, expect } from "bun:test";
+import { Wallet } from "@ethersproject/wallet";
+import { type OrderData, Side as UtilsSide, SignatureType } from "@polymarket/order-utils";
+import { beforeEach, describe, expect, it } from "bun:test";
+
+import { type ContractConfig, getContractConfig } from "../../src/config";
 import {
-  type UserOrder,
-  Side,
-  Chain,
-  type UserMarketOrder,
-  type OrderSummary,
-  OrderType,
-} from "../../src/types";
-import {
-  buildOrderCreationArgs,
-  buildOrder,
-  createOrder,
   buildMarketOrderCreationArgs,
-  createMarketOrder,
-  getOrderRawAmounts,
-  getMarketOrderRawAmounts,
-  ROUNDING_CONFIG,
+  buildOrder,
+  buildOrderCreationArgs,
   calculateBuyMarketPrice,
   calculateSellMarketPrice,
+  createMarketOrder,
+  createOrder,
+  getMarketOrderRawAmounts,
+  getOrderRawAmounts,
+  ROUNDING_CONFIG,
 } from "../../src/order-builder/helpers";
-import { type OrderData, SignatureType, Side as UtilsSide } from "@polymarket/order-utils";
-import { Wallet } from "@ethersproject/wallet";
+import {
+  Chain,
+  type OrderSummary,
+  OrderType,
+  Side,
+  type UserMarketOrder,
+  type UserOrder,
+} from "../../src/types";
 import { decimalPlaces, roundDown, roundNormal } from "../../src/utilities";
-import { type ContractConfig, getContractConfig } from "../../src/config";
 
 describe("helpers", () => {
   const chainId = Chain.AMOY;

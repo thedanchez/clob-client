@@ -1,6 +1,7 @@
-import { ethers } from "ethers";
 import { config as dotenvConfig } from "dotenv";
+import { ethers } from "ethers";
 import { resolve } from "path";
+
 import { type ApiKeyCreds, type BookParams, Chain, ClobClient } from "../src";
 
 dotenvConfig({ path: resolve(__dirname, "../.env") });

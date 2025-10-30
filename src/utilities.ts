@@ -1,5 +1,6 @@
 import { Side as UtilsSide, type SignedOrder } from "@polymarket/order-utils";
 import { createHash } from "crypto";
+
 import { type NewOrder, type OrderBookSummary, OrderType, Side, type TickSize } from "./types";
 
 export function orderToJson<T extends OrderType>(

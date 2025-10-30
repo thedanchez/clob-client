@@ -1,26 +1,27 @@
 import { JsonRpcSigner } from "@ethersproject/providers";
-import { Wallet } from "@ethersproject/wallet";
 import { parseUnits } from "@ethersproject/units";
+import { Wallet } from "@ethersproject/wallet";
 import {
   ExchangeOrderBuilder,
   type OrderData,
+  Side as UtilsSide,
   SignatureType,
   type SignedOrder,
-  Side as UtilsSide,
 } from "@polymarket/order-utils";
+
+import { COLLATERAL_TOKEN_DECIMALS, getContractConfig } from "../config";
 import {
-  type UserOrder,
-  Side,
   Chain,
-  type UserMarketOrder,
-  type TickSize,
-  type RoundConfig,
   type CreateOrderOptions,
   type OrderSummary,
   OrderType,
+  type RoundConfig,
+  Side,
+  type TickSize,
+  type UserMarketOrder,
+  type UserOrder,
 } from "../types";
 import { decimalPlaces, roundDown, roundNormal, roundUp } from "../utilities";
-import { COLLATERAL_TOKEN_DECIMALS, getContractConfig } from "../config";
 
 export const ROUNDING_CONFIG: Record<TickSize, RoundConfig> = {
   "0.1": {

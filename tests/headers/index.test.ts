@@ -1,6 +1,7 @@
-import { describe, it, beforeEach, expect } from "bun:test";
-import { createL1Headers, createL2Headers } from "../../src/headers/index";
+import { beforeEach, describe, expect, it } from "bun:test";
 import { Wallet } from "ethers";
+
+import { createL1Headers, createL2Headers } from "../../src/headers/index";
 import { type ApiKeyCreds, Chain } from "../../src/types";
 
 describe("headers", () => {

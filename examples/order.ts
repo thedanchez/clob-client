@@ -2,8 +2,9 @@
 //npm install ethers
 //Client initialization example and dumping API Keys
 
-import { ClobClient, OrderType, Side } from "../src";
 import { Wallet } from "@ethersproject/wallet";
+
+import { ClobClient, OrderType, Side } from "../src";
 
 const host = "https://clob.polymarket.com";
 const funder = ""; //This is your Polymarket Profile Address, where you send UDSC to.

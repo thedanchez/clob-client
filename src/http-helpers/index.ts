@@ -1,7 +1,6 @@
-/* eslint-disable max-depth */
 import axios, { type AxiosRequestHeaders, type Method } from "axios";
-import type { DropNotificationParams, OrdersScoringParams } from "src/types";
 import { isBrowser } from "browser-or-node";
+import type { DropNotificationParams, OrdersScoringParams } from "src/types";
 
 export const GET = "GET";
 export const POST = "POST";
@@ -13,7 +12,7 @@ const overloadHeaders = (method: Method, headers?: Record<string, string | numbe
     return;
   }
 
-  if (!headers || typeof headers === undefined) {
+  if (!headers || typeof headers === "undefined") {
     headers = {};
   }
 

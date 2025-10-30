@@ -1,6 +1,7 @@
-import { ethers } from "ethers";
 import { config as dotenvConfig } from "dotenv";
+import { ethers } from "ethers";
 import { resolve } from "path";
+
 import { type ApiKeyCreds, Chain, ClobClient } from "../src";
 
 dotenvConfig({ path: resolve(__dirname, "../.env") });
@@ -20,17 +21,13 @@ async function main() {
 
   console.log(
     await clobClient.getTrades({
-      asset_id:
-        // eslint-disable-next-line max-len
-        "52114319501245915516055106046884209969926127482827954674443846427813813222426", // NO
+      asset_id: "52114319501245915516055106046884209969926127482827954674443846427813813222426", // NO
       maker_address: await wallet.getAddress(),
     }),
   );
   console.log(
     await clobClient.getTrades({
-      asset_id:
-        // eslint-disable-next-line max-len
-        "71321045679252212594626385532706912750332728571942532289631379312455583992563", // YES
+      asset_id: "71321045679252212594626385532706912750332728571942532289631379312455583992563", // YES
       maker_address: await wallet.getAddress(),
     }),
   );

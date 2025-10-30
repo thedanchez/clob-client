@@ -1,10 +1,11 @@
-import { BigNumber, constants, ethers } from "ethers";
 import { config as dotenvConfig } from "dotenv";
+import { BigNumber, constants, ethers } from "ethers";
 import { resolve } from "path";
+
 import { Chain } from "../src";
 import { getContractConfig } from "../src/config";
-import { usdcAbi } from "./abi/usdcAbi";
 import { ctfAbi } from "./abi/ctfAbi";
+import { usdcAbi } from "./abi/usdcAbi";
 
 dotenvConfig({ path: resolve(__dirname, "../.env") });
 

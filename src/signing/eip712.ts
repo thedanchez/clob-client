@@ -1,7 +1,8 @@
-import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcSigner } from "@ethersproject/providers";
-import { MSG_TO_SIGN } from "./constants";
+import { Wallet } from "@ethersproject/wallet";
 import { Chain } from "src/types";
+
+import { MSG_TO_SIGN } from "./constants";
 
 /**
  * Builds the canonical Polymarket CLOB EIP712 signature
@@ -38,7 +39,7 @@ export const buildClobEip712Signature = async (
     nonce,
     message: MSG_TO_SIGN,
   };
-  // eslint-disable-next-line no-underscore-dangle
+
   const sig = await signer._signTypedData(domain, types, value);
   return sig;
 };

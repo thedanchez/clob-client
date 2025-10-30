@@ -1,8 +1,9 @@
-import { ethers } from "ethers";
-import { config as dotenvConfig } from "dotenv";
-import { resolve } from "path";
-import { type ApiKeyCreds, Chain, ClobClient } from "../src";
 import { type BuilderApiKeyCreds, BuilderConfig } from "@polymarket/builder-signing-sdk";
+import { config as dotenvConfig } from "dotenv";
+import { ethers } from "ethers";
+import { resolve } from "path";
+
+import { type ApiKeyCreds, Chain, ClobClient } from "../src";
 
 dotenvConfig({ path: resolve(__dirname, "../.env") });
 

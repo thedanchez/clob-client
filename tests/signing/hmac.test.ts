@@ -1,4 +1,5 @@
-import { expect, describe, it } from "bun:test";
+import { describe, expect, it } from "bun:test";
+
 import { buildPolyHmacSignature } from "../../src/signing/hmac";
 
 describe("hmac", () => {
