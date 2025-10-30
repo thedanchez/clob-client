@@ -1,5 +1,11 @@
 # @dschz/polymarket-clob-client
 
+## 0.2.3
+
+### Patch Changes
+
+- Fixes update signing sdk imports
+
 ## 0.2.2
 
 ### Minor Changes
