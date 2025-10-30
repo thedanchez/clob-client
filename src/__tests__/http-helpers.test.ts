@@ -1,10 +1,7 @@
 import { describe, expect, it } from "bun:test";
 
-import type { DropNotificationParams, OrdersScoringParams } from "../../src";
-import {
-  parseDropNotificationParams,
-  parseOrdersScoringParams,
-} from "../../src/http-helpers/index";
+import type { DropNotificationParams, OrdersScoringParams } from "..";
+import { parseDropNotificationParams, parseOrdersScoringParams } from "../http-helpers/index";
 
 describe("utilities", () => {
   describe("parseOrdersScoringParams", () => {

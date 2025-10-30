@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "bun:test";
 import { Wallet } from "ethers";
 
-import { createL1Headers, createL2Headers } from "../../src/headers/index";
-import { type ApiKeyCreds, Chain } from "../../src/types";
+import { createL1Headers, createL2Headers } from "../headers/index";
+import { type ApiKeyCreds, Chain } from "../types";
 
 describe("headers", () => {
   const chainId = Chain.AMOY;

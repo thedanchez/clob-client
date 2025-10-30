@@ -1,8 +1,9 @@
 import { Wallet } from "@ethersproject/wallet";
 import { beforeEach, describe, expect, it } from "bun:test";
 
-import { buildClobEip712Signature } from "../../src/signing/eip712";
-import { Chain } from "../../src/types";
+import { buildClobEip712Signature } from "../signing/eip712";
+import { buildPolyHmacSignature } from "../signing/hmac";
+import { Chain } from "../types";
 
 describe("eip712", () => {
   let wallet: Wallet;
@@ -20,5 +21,21 @@ describe("eip712", () => {
     expect(signature).toEqual(
       "0xf62319a987514da40e57e2f4d7529f7bac38f0355bd88bb5adbb3768d80de6c1682518e0af677d5260366425f4361e7b70c25ae232aff0ab2331e2b164a1aedc1b",
     );
+  });
+});
+
+describe("hmac", () => {
+  it("buildPolyHmacSignature", () => {
+    const signature = buildPolyHmacSignature(
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+      1000000,
+      "test-sign",
+      "/orders",
+      '{"hash": "0x123"}',
+    );
+    expect(signature).not.toBeNull();
+    expect(signature).not.toBeUndefined();
+    expect(signature).not.toBeEmpty();
+    expect(signature).toEqual("ZwAdJKvoYRlEKDkNMwd5BuwNNtg93kNaR_oU2HrfVvc=");
   });
 });

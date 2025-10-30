@@ -2,6 +2,7 @@ import { Wallet } from "@ethersproject/wallet";
 import { Side as UtilsSide, SignatureType } from "@polymarket/order-utils";
 import { describe, expect, it } from "bun:test";
 
+import { createMarketOrder, createOrder } from "../order-builder/helpers";
 import {
   Chain,
   type OrderBookSummary,
@@ -9,8 +10,7 @@ import {
   Side,
   type UserMarketOrder,
   type UserOrder,
-} from "../src";
-import { createMarketOrder, createOrder } from "../src/order-builder/helpers";
+} from "../types";
 import {
   decimalPlaces,
   generateOrderBookSummaryHash,
@@ -18,7 +18,7 @@ import {
   orderToJson,
   priceValid,
   roundDown,
-} from "../src/utilities";
+} from "../utilities";
 
 describe("utilities", () => {
   describe("orderToJson", () => {

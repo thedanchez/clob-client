@@ -2,7 +2,7 @@ import { Wallet } from "@ethersproject/wallet";
 import { type OrderData, Side as UtilsSide, SignatureType } from "@polymarket/order-utils";
 import { beforeEach, describe, expect, it } from "bun:test";
 
-import { type ContractConfig, getContractConfig } from "../../src/config";
+import { type ContractConfig, getContractConfig } from "../config";
 import {
   buildMarketOrderCreationArgs,
   buildOrder,
@@ -14,7 +14,7 @@ import {
   getMarketOrderRawAmounts,
   getOrderRawAmounts,
   ROUNDING_CONFIG,
-} from "../../src/order-builder/helpers";
+} from "../order-builder/helpers";
 import {
   Chain,
   type OrderSummary,
@@ -22,8 +22,8 @@ import {
   Side,
   type UserMarketOrder,
   type UserOrder,
-} from "../../src/types";
-import { decimalPlaces, roundDown, roundNormal } from "../../src/utilities";
+} from "../types";
+import { decimalPlaces, roundDown, roundNormal } from "../utilities";
 
 describe("helpers", () => {
   const chainId = Chain.AMOY;
