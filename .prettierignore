@@ -1,14 +1,12 @@
-# folders
-artifacts/
-build/
-cache/
-coverage/
-dist/
-lib/
-node_modules/
-typechain/
+# Ignore artifacts:
+dist
+build
+coverage
+node_modules
+.nyc_output
 
-forks/fx-portal
-
-# files
-coverage.json
+# Lock files (auto-generated, should not be formatted)
+bun.lock
+pnpm-lock.yaml
+package-lock.json
+yarn.lock

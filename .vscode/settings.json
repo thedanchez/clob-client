@@ -1,14 +1,10 @@
 {
-    "editor.codeActionsOnSave": {
-        "source.fixAll": "always"
-    },
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true,
-    "editor.rulers": [100],
-    "editor.tabSize": 2,
-    "files.autoSave": "onFocusChange",
-    "files.eol": "\n",
-    "files.insertFinalNewline": true,
-    "javascript.suggestionActions.enabled": false,
-    "typescript.suggestionActions.enabled": false
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always"
+  },
+  "editor.formatOnSave": true,
+  "editor.rulers": [100],
+  "editor.tabSize": 2,
+  "files.autoSave": "onFocusChange",
+  "files.insertFinalNewline": true
 }
