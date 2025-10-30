@@ -6787,7 +6787,7 @@ describe("utilities", () => {
     expect(roundDown(0.57, 4)).toEqual(0.57);
   });
 
-  it("generateOrderBookSummaryHash", () => {
+  it("generateOrderBookSummaryHash", async () => {
     let orderbook = {
       market: "0xaabbcc",
       asset_id: "100",
@@ -6806,7 +6806,7 @@ describe("utilities", () => {
       hash: "",
     } as OrderBookSummary;
 
-    expect(generateOrderBookSummaryHash(orderbook)).toEqual(
+    expect(await generateOrderBookSummaryHash(orderbook)).toEqual(
       "36f56998e26d9a7c553446f35b240481efb271a3",
     );
     expect(orderbook.hash).toEqual("36f56998e26d9a7c553446f35b240481efb271a3");
@@ -6827,7 +6827,7 @@ describe("utilities", () => {
       hash: "36f56998e26d9a7c553446f35b240481efb271a3",
     } as OrderBookSummary;
 
-    expect(generateOrderBookSummaryHash(orderbook)).toEqual(
+    expect(await generateOrderBookSummaryHash(orderbook)).toEqual(
       "5489da29343426f88622d61044975dc5fd828a27",
     );
     expect(orderbook.hash).toEqual("5489da29343426f88622d61044975dc5fd828a27");
@@ -6845,10 +6845,72 @@ describe("utilities", () => {
       hash: "",
     } as OrderBookSummary;
 
-    expect(generateOrderBookSummaryHash(orderbook)).toEqual(
+    expect(await generateOrderBookSummaryHash(orderbook)).toEqual(
       "d4d4e4ea0f1d86ce02d22704bd33414f45573e84",
     );
     expect(orderbook.hash).toEqual("d4d4e4ea0f1d86ce02d22704bd33414f45573e84");
+  });
+
+  it("generateOrderBookSummaryHash produces same result in server and browser environments", async () => {
+    const testOrderbook = {
+      market: "0xaabbcc",
+      asset_id: "100",
+      timestamp: "123456789",
+      bids: [
+        { price: "0.3", size: "100" },
+        { price: "0.4", size: "100" },
+      ],
+      asks: [
+        { price: "0.6", size: "100" },
+        { price: "0.7", size: "100" },
+      ],
+      min_order_size: "15",
+      tick_size: "0.001",
+      neg_risk: false,
+      hash: "",
+    } as OrderBookSummary;
+
+    // Test in Node.js environment
+    const nodeHash = await generateOrderBookSummaryHash({ ...testOrderbook });
+
+    expect(nodeHash).toEqual("36f56998e26d9a7c553446f35b240481efb271a3");
+
+    // Create JSDOM environment to simulate browser
+    const { JSDOM } = await import("jsdom");
+    const dom = new JSDOM("", {
+      url: "https://localhost",
+      pretendToBeVisual: true,
+      resources: "usable",
+    });
+
+    // Store original window
+    const originalWindow = (globalThis as any).window;
+
+    try {
+      // Set up browser-like environment
+      (globalThis as any).window = dom.window;
+
+      // Polyfill Web Crypto API using Node.js webcrypto
+      const { webcrypto } = await import("crypto");
+      Object.defineProperty(dom.window, "crypto", {
+        value: {
+          ...dom.window.crypto,
+          subtle: webcrypto.subtle,
+        },
+        writable: true,
+        configurable: true,
+      });
+
+      // Test in browser environment
+      const browserHash = await generateOrderBookSummaryHash({ ...testOrderbook });
+
+      // Both implementations should produce the same result
+      expect(browserHash).toEqual(nodeHash);
+      expect(browserHash).toEqual("36f56998e26d9a7c553446f35b240481efb271a3");
+    } finally {
+      // Restore original window
+      (globalThis as any).window = originalWindow;
+    }
   });
 
   it("isTickSizeSmaller", () => {

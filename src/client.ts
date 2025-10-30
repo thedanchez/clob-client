@@ -310,9 +310,9 @@ export class ClobClient {
   /**
    * Calculates the hash for the given orderbook
    * @param orderbook
-   * @returns
+   * @returns Promise<string>
    */
-  public getOrderBookHash(orderbook: OrderBookSummary): string {
+  public async getOrderBookHash(orderbook: OrderBookSummary): Promise<string> {
     return generateOrderBookSummaryHash(orderbook);
   }
 

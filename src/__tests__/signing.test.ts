@@ -24,18 +24,71 @@ describe("eip712", () => {
   });
 });
 
-describe("hmac", () => {
-  it("buildPolyHmacSignature", () => {
-    const signature = buildPolyHmacSignature(
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-      1000000,
-      "test-sign",
-      "/orders",
-      '{"hash": "0x123"}',
+describe("[SIGNING] hmac", () => {
+  const testSecret = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  const testTimestamp = 1000000;
+  const testMethod = "test-sign";
+  const testPath = "/orders";
+  const testBody = '{"hash": "0x123"}';
+
+  it("produces same result in server and browser environments", async () => {
+    const nodeSignature = await buildPolyHmacSignature(
+      testSecret,
+      testTimestamp,
+      testMethod,
+      testPath,
+      testBody,
     );
-    expect(signature).not.toBeNull();
-    expect(signature).not.toBeUndefined();
-    expect(signature).not.toBeEmpty();
-    expect(signature).toEqual("ZwAdJKvoYRlEKDkNMwd5BuwNNtg93kNaR_oU2HrfVvc=");
+
+    expect(nodeSignature).toEqual("ZwAdJKvoYRlEKDkNMwd5BuwNNtg93kNaR_oU2HrfVvc=");
+
+    // Create JSDOM environment to simulate browser
+    const { JSDOM } = await import("jsdom");
+    const dom = new JSDOM("", {
+      url: "https://localhost",
+      pretendToBeVisual: true,
+      resources: "usable",
+    });
+
+    // Store original window
+    const originalWindow = (globalThis as any).window;
+
+    try {
+      // Set up browser-like environment
+      (globalThis as any).window = dom.window;
+
+      // Polyfill Web Crypto API using Node.js webcrypto
+      const { webcrypto } = await import("crypto");
+      Object.defineProperty(dom.window, "crypto", {
+        value: {
+          ...dom.window.crypto,
+          subtle: webcrypto.subtle,
+        },
+        writable: true,
+        configurable: true,
+      });
+
+      // Test in browser environment
+      const browserSignature = await buildPolyHmacSignature(
+        testSecret,
+        testTimestamp,
+        testMethod,
+        testPath,
+        testBody,
+      );
+
+      // Both implementations should produce the same result
+      expect(browserSignature).toEqual(nodeSignature);
+      expect(browserSignature).toEqual("ZwAdJKvoYRlEKDkNMwd5BuwNNtg93kNaR_oU2HrfVvc=");
+    } finally {
+      // Cleanup: restore original environment
+      if (originalWindow) {
+        (globalThis as any).window = originalWindow;
+      } else {
+        delete (globalThis as any).window;
+      }
+
+      dom.window.close();
+    }
   });
 });

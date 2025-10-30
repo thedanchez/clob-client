@@ -1,10 +1,37 @@
 import { Side as UtilsSide, type SignedOrder } from "@dschz/polymarket-clob-order-utils";
-import { createHash } from "crypto";
 
 import { type NewOrder, type OrderBookSummary, OrderType, Side, type TickSize } from "./types";
 
+/**
+ * Warning: SHA-1 is now considered vulnerable and should not be used for cryptographic applications.
+ */
+type HashAlgorithm = "sha1" | "sha256" | "sha384" | "sha512";
+
 export const isBrowser = () => {
   return typeof window !== "undefined" && typeof window.document !== "undefined";
+};
+
+const createHash = async (algorithm: HashAlgorithm, data: string) => {
+  if (isBrowser()) {
+    const encoder = new TextEncoder();
+    const dataBuffer = encoder.encode(data);
+
+    // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest#supported_algorithms
+    const cryptoAlgorithm = {
+      sha1: "SHA-1",
+      sha256: "SHA-256",
+      sha384: "SHA-384",
+      sha512: "SHA-512",
+    }[algorithm];
+
+    const hashBuffer = await window.crypto.subtle.digest(cryptoAlgorithm, dataBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  const crypto = await import("crypto");
+  return crypto.createHash(algorithm).update(data).digest("hex");
 };
 
 export function orderToJson<T extends OrderType>(
@@ -79,11 +106,13 @@ export const decimalPlaces = (num: number): number => {
 /**
  * Calculates the hash for the given orderbook
  * @param orderbook
- * @returns
+ * @returns Promise<string>
  */
-export const generateOrderBookSummaryHash = (orderbook: OrderBookSummary): string => {
+export const generateOrderBookSummaryHash = async (
+  orderbook: OrderBookSummary,
+): Promise<string> => {
   orderbook.hash = "";
-  const hash = createHash("sha1").update(JSON.stringify(orderbook)).digest("hex");
+  const hash = await createHash("sha1", JSON.stringify(orderbook));
   orderbook.hash = hash;
   return hash;
 };
