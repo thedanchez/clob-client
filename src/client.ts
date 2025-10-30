@@ -1,7 +1,7 @@
-import { JsonRpcSigner } from "@ethersproject/providers";
+import { SignatureType, type SignedOrder } from "@dschz/polymarket-clob-order-utils";
+import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
 import { BuilderConfig, type BuilderHeaderPayload } from "@polymarket/builder-signing-sdk";
-import { SignatureType, type SignedOrder } from "@dschz/polymarket-clob-order-utils";
 
 import { END_CURSOR, INITIAL_CURSOR } from "./constants";
 import {
@@ -132,6 +132,27 @@ import {
   orderToJson,
   priceValid,
 } from "./utilities";
+
+type EIP1193Provider = {
+  on: (event: any, listener: (...args: any[]) => void) => void;
+  request: (args: any) => Promise<any>;
+  removeListener: (event: any, listener: (...args: any[]) => void) => void;
+};
+
+/**
+ * Creates a signer for any provider that conforms to the EIP1193 standard.
+ * Supports providers from various libraries including:
+ * - Your local EIP1193Provider type
+ * - viem's EIP1193Provider
+ * - Privy's providers
+ * - MetaMask's window.ethereum
+ * - WalletConnect providers
+ * - Any custom provider with a compatible request method
+ */
+export const createSignerForProvider = (provider: EIP1193Provider): JsonRpcSigner => {
+  const p = new Web3Provider(provider);
+  return p.getSigner();
+};
 
 export class ClobClient {
   readonly host: string;
