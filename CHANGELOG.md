@@ -1,5 +1,11 @@
 # @dschz/polymarket-clob-client
 
+## 0.2.0
+
+### Minor Changes
+
+- Dynamically run proper crypto APIs dependening on runtime (server vs browser)
+
 ## 0.1.1
 
 ### Patch Changes
