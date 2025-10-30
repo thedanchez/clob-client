@@ -3,6 +3,10 @@ import { createHash } from "crypto";
 
 import { type NewOrder, type OrderBookSummary, OrderType, Side, type TickSize } from "./types";
 
+export const isBrowser = () => {
+  return typeof window !== "undefined" && typeof window.document !== "undefined";
+};
+
 export function orderToJson<T extends OrderType>(
   order: SignedOrder,
   owner: string,

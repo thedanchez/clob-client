@@ -1,6 +1,7 @@
 import axios, { type AxiosRequestHeaders, type Method } from "axios";
-import { isBrowser } from "browser-or-node";
-import type { DropNotificationParams, OrdersScoringParams } from "src/types";
+
+import type { DropNotificationParams, OrdersScoringParams } from "../types";
+import { isBrowser } from "../utilities";
 
 export const GET = "GET";
 export const POST = "POST";
@@ -8,7 +9,7 @@ export const DELETE = "DELETE";
 export const PUT = "PUT";
 
 const overloadHeaders = (method: Method, headers?: Record<string, string | number | boolean>) => {
-  if (isBrowser) {
+  if (isBrowser()) {
     return;
   }
 

@@ -8,7 +8,7 @@
     "skipLibCheck": true,
     "target": "ESNext",
     "module": "ESNext",
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "DOM"],
     "allowJs": true,
     "resolveJsonModule": true,
     "moduleResolution": "Bundler",
