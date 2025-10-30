@@ -1,5 +1,5 @@
+import { type BuilderApiKeyCreds, BuilderConfig } from "@dschz/polymarket-builder-signing-sdk";
 import { Wallet } from "@ethersproject/wallet";
-import { type BuilderApiKeyCreds, BuilderConfig } from "@polymarket/builder-signing-sdk";
 import { config as dotenvConfig } from "dotenv";
 import { resolve } from "path";
 

@@ -1,6 +1,6 @@
+import type { BuilderHeaderPayload } from "@dschz/polymarket-builder-signing-sdk";
 import { JsonRpcSigner } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
-import type { BuilderHeaderPayload } from "@polymarket/builder-signing-sdk";
 
 import { buildClobEip712Signature, buildPolyHmacSignature } from "../signing";
 import {
