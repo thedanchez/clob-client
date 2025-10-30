@@ -40,7 +40,8 @@
     "ethereum"
   ],
   "scripts": {
-    "build": "rm -rf dist && tsc --module commonjs",
+    "build": "tsup",
+    "build:watch": "tsup --watch",
     "deploy": "bun run build && bun publish",
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
@@ -70,6 +71,7 @@
     "jsdom-global": "3.0.2",
     "path": "0.12.7",
     "prettier": "3.6.2",
+    "tsup": "8.5.0",
     "typescript": "5.9.3",
     "typescript-eslint": "8.46.2",
     "ws": "8.18.3"
