@@ -1,6 +1,6 @@
+import { SignatureType } from "@dschz/polymarket-clob-order-utils";
 import { Wallet } from "@ethersproject/wallet";
 import { BuilderConfig } from "@polymarket/builder-signing-sdk";
-import { SignatureType } from "@dschz/polymarket-clob-order-utils";
 import { config as dotenvConfig } from "dotenv";
 import { resolve } from "path";
 

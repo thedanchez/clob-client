@@ -1,9 +1,9 @@
-import { Wallet } from "@ethersproject/wallet";
 import {
   type OrderData,
   Side as UtilsSide,
   SignatureType,
 } from "@dschz/polymarket-clob-order-utils";
+import { Wallet } from "@ethersproject/wallet";
 import { beforeEach, describe, expect, it } from "bun:test";
 
 import { type ContractConfig, getContractConfig } from "../config";

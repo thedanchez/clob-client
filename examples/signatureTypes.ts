@@ -1,6 +1,6 @@
 /** eslint-disable @typescript-eslint/no-unused-vars */
-import { Wallet } from "@ethersproject/wallet";
 import { SignatureType } from "@dschz/polymarket-clob-order-utils";
+import { Wallet } from "@ethersproject/wallet";
 import { config as dotenvConfig } from "dotenv";
 import { resolve } from "path";
 

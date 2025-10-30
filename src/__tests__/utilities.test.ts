@@ -1,5 +1,5 @@
-import { Wallet } from "@ethersproject/wallet";
 import { Side as UtilsSide, SignatureType } from "@dschz/polymarket-clob-order-utils";
+import { Wallet } from "@ethersproject/wallet";
 import { describe, expect, it } from "bun:test";
 
 import { createMarketOrder, createOrder } from "../order-builder/helpers";
