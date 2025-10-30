@@ -94,6 +94,7 @@
     "ws": "8.18.3"
   },
   "dependencies": {
+    "@dschz/polymarket-builder-signing-sdk": "^0.2.0",
     "@dschz/polymarket-clob-order-utils": "^0.2.1",
     "@ethersproject/bignumber": "^5.8.0",
     "@ethersproject/constants": "^5.8.0",
@@ -101,7 +102,6 @@
     "@ethersproject/providers": "^5.8.0",
     "@ethersproject/units": "^5.8.0",
     "@ethersproject/wallet": "^5.8.0",
-    "@polymarket/builder-signing-sdk": "^0.0.8",
     "axios": "^0.30.2"
   },
   "engines": {
