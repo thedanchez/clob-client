@@ -1,5 +1,11 @@
 # @dschz/polymarket-clob-client
 
+## 0.2.1
+
+### Patch Changes
+
+- Further optimize output bundle for consumers
+
 ## 0.2.0
 
 ### Minor Changes
