@@ -18,7 +18,7 @@ const overloadHeaders = (method: Method, headers?: Record<string, string | numbe
   }
 
   if (headers) {
-    headers["User-Agent"] = `@polymarket/clob-client`;
+    headers["User-Agent"] = `@dschz/polymarket-clob-client`;
     headers["Accept"] = "*/*";
     headers["Connection"] = "keep-alive";
     headers["Content-Type"] = "application/json";

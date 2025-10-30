@@ -1,4 +1,4 @@
-//npm install @polymarket/clob-client
+//npm install @dschz/polymarket-clob-client
 //npm install ethers
 //Client initialization example and dumping API Keys
 
