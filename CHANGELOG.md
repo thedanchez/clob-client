@@ -1,5 +1,11 @@
 # @dschz/polymarket-clob-client
 
+## 0.2.2
+
+### Minor Changes
+
+- Updates polymarket-builder-signing-sdk dependency to 0.2.0
+
 ## 0.2.1
 
 ### Patch Changes
