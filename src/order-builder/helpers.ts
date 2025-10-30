@@ -1,13 +1,13 @@
-import { JsonRpcSigner } from "@ethersproject/providers";
-import { parseUnits } from "@ethersproject/units";
-import { Wallet } from "@ethersproject/wallet";
 import {
   ExchangeOrderBuilder,
   type OrderData,
   Side as UtilsSide,
   SignatureType,
   type SignedOrder,
-} from "@polymarket/order-utils";
+} from "@dschz/polymarket-clob-order-utils";
+import { JsonRpcSigner } from "@ethersproject/providers";
+import { parseUnits } from "@ethersproject/units";
+import { Wallet } from "@ethersproject/wallet";
 
 import { COLLATERAL_TOKEN_DECIMALS, getContractConfig } from "../config";
 import {

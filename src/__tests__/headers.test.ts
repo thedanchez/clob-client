@@ -1,5 +1,5 @@
+import { Wallet } from "@ethersproject/wallet";
 import { beforeEach, describe, expect, it } from "bun:test";
-import { Wallet } from "ethers";
 
 import { createL1Headers, createL2Headers } from "../headers/index";
 import { type ApiKeyCreds, Chain } from "../types";

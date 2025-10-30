@@ -1,7 +1,7 @@
 import { JsonRpcSigner } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
 import { BuilderConfig, type BuilderHeaderPayload } from "@polymarket/builder-signing-sdk";
-import { SignatureType, type SignedOrder } from "@polymarket/order-utils";
+import { SignatureType, type SignedOrder } from "@dschz/polymarket-clob-order-utils";
 
 import { END_CURSOR, INITIAL_CURSOR } from "./constants";
 import {

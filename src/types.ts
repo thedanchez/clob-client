@@ -1,4 +1,4 @@
-import { SignatureType, type SignedOrder } from "@polymarket/order-utils";
+import { SignatureType, type SignedOrder } from "@dschz/polymarket-clob-order-utils";
 import type { AxiosRequestHeaders } from "axios";
 
 export interface ApiKeyCreds {

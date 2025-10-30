@@ -1,6 +1,6 @@
+import { Wallet } from "@ethersproject/wallet";
 import { type BuilderApiKeyCreds, BuilderConfig } from "@polymarket/builder-signing-sdk";
 import { config as dotenvConfig } from "dotenv";
-import { ethers } from "ethers";
 import { resolve } from "path";
 
 import { type ApiKeyCreds, Chain, ClobClient } from "../src";
@@ -8,7 +8,7 @@ import { type ApiKeyCreds, Chain, ClobClient } from "../src";
 dotenvConfig({ path: resolve(__dirname, "../.env") });
 
 async function main() {
-  const wallet = new ethers.Wallet(`${process.env.PK}`);
+  const wallet = new Wallet(`${process.env.PK}`);
   const chainId = parseInt(`${process.env.CHAIN_ID || Chain.AMOY}`) as Chain;
   console.log(`Address: ${await wallet.getAddress()}, chainId: ${chainId}`);
 

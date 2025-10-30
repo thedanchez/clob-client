@@ -1,6 +1,6 @@
 import { JsonRpcSigner } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
-import { SignatureType, type SignedOrder } from "@polymarket/order-utils";
+import { SignatureType, type SignedOrder } from "@dschz/polymarket-clob-order-utils";
 
 import { Chain, type CreateOrderOptions, type UserMarketOrder, type UserOrder } from "../types";
 import { createMarketOrder, createOrder } from "./helpers";

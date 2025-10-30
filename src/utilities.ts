@@ -1,4 +1,4 @@
-import { Side as UtilsSide, type SignedOrder } from "@polymarket/order-utils";
+import { Side as UtilsSide, type SignedOrder } from "@dschz/polymarket-clob-order-utils";
 import { createHash } from "crypto";
 
 import { type NewOrder, type OrderBookSummary, OrderType, Side, type TickSize } from "./types";

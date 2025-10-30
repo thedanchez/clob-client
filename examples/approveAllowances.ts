@@ -1,5 +1,9 @@
+import { BigNumber } from "@ethersproject/bignumber";
+import * as constants from "@ethersproject/constants";
+import { Contract } from "@ethersproject/contracts";
+import { JsonRpcProvider } from "@ethersproject/providers";
+import { Wallet } from "@ethersproject/wallet";
 import { config as dotenvConfig } from "dotenv";
-import { BigNumber, constants, ethers } from "ethers";
 import { resolve } from "path";
 
 import { Chain } from "../src";
@@ -9,7 +13,7 @@ import { usdcAbi } from "./abi/usdcAbi";
 
 dotenvConfig({ path: resolve(__dirname, "../.env") });
 
-export function getWallet(mainnetQ: boolean): ethers.Wallet {
+export function getWallet(mainnetQ: boolean): Wallet {
   const pk = process.env.PK as string;
   const rpcToken: string = process.env.RPC_TOKEN as string;
   let rpcUrl = "";
@@ -18,22 +22,22 @@ export function getWallet(mainnetQ: boolean): ethers.Wallet {
   } else {
     rpcUrl = `https://polygon-amoy.g.alchemy.com/v2/${rpcToken}`;
   }
-  const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-  let wallet = new ethers.Wallet(pk);
+  const provider = new JsonRpcProvider(rpcUrl);
+  let wallet = new Wallet(pk);
   wallet = wallet.connect(provider);
   return wallet;
 }
 
-export function getUsdcContract(mainnetQ: boolean, wallet: ethers.Wallet): ethers.Contract {
+export function getUsdcContract(mainnetQ: boolean, wallet: Wallet): Contract {
   const chainId = mainnetQ ? 137 : 80002;
   const contractConfig = getContractConfig(chainId);
-  return new ethers.Contract(contractConfig.collateral, usdcAbi, wallet);
+  return new Contract(contractConfig.collateral, usdcAbi, wallet);
 }
 
-export function getCtfContract(mainnetQ: boolean, wallet: ethers.Wallet): ethers.Contract {
+export function getCtfContract(mainnetQ: boolean, wallet: Wallet): Contract {
   const chainId = mainnetQ ? 137 : 80002;
   const contractConfig = getContractConfig(chainId);
-  return new ethers.Contract(contractConfig.conditionalTokens, ctfAbi, wallet);
+  return new Contract(contractConfig.conditionalTokens, ctfAbi, wallet);
 }
 
 async function main() {

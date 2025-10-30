@@ -1,5 +1,5 @@
+import { Wallet } from "@ethersproject/wallet";
 import { config as dotenvConfig } from "dotenv";
-import { ethers } from "ethers";
 import { resolve } from "path";
 
 import {
@@ -13,7 +13,7 @@ import {
 dotenvConfig({ path: resolve(__dirname, "../.env") });
 
 async function main() {
-  const wallet = new ethers.Wallet(`${process.env.PK}`);
+  const wallet = new Wallet(`${process.env.PK}`);
   const chainId = parseInt(`${process.env.CHAIN_ID || Chain.AMOY}`) as Chain;
   console.log(`Address: ${await wallet.getAddress()}, chainId: ${chainId}`);
 
