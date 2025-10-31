@@ -7,6 +7,14 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "homepage": "https://github.com/dsnchz/polymarket-clob-client#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dsnchz/polymarket-clob-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dsnchz/polymarket-clob-client/issues"
+  },
   "publishConfig": {
     "access": "public"
   },

@@ -58,18 +58,16 @@ export default defineConfig({
 });
 ```
 
-## Configuration Defaults
-
-> 💡 When creating a `ClobClient` instance, the following defaults are used for unspecified parameters:
->
-> - **host**: `"https://clob.polymarket.com"` (Polymarket production API)
-> - **chainId**: `137` (Polygon mainnet)
-> - **signatureType**: `0` (EOA - Externally Owned Account)
-> - **funderAddress**: Defaults to the `signer` address when not provided
->
-> This means you can create a minimal, _read-only_ client with just `new ClobClient()` which will hit Polygon mainnet. If you want to place trades on mainnet, then you need to configure both `signer` and `creds` via `new ClobClient({ signer, creds })` which you can see the usage examples configure below.
-
 ## Usage
+
+💡 When creating a `ClobClient` instance, the following defaults are used for unspecified parameters:
+
+- **host**: `"https://clob.polymarket.com"` (Polymarket production API)
+- **chainId**: `137` (Polygon mainnet)
+- **signatureType**: `0` (EOA - Externally Owned Account)
+- **funderAddress**: Defaults to the `signer` address when not provided
+
+This means you can create a minimal, _read-only_ client with just `new ClobClient()` which will hit Polygon mainnet. If you want to place trades on mainnet, then you need to configure both `signer` and `creds` via `new ClobClient({ signer, creds })` which you can see the examples configure below.
 
 #### Browser Environment with Wallet Providers
 
@@ -86,15 +84,10 @@ import {
 // Example 1: MetaMask
 if (window.ethereum) {
   const signer = createSignerForProvider(window.ethereum);
-  const funder = await signer.getAddress(); // Use connected wallet address
-
+  // Get API key derived from signer for Polygon mainnet
   const creds = await new ClobClient({ signer }).createOrDeriveApiKey();
-  const clobClient = new ClobClient({
-    signer,
-    creds,
-    signatureType: 0,
-    funderAddress: funder,
-  });
+  // Defaults to Polygon mainnet, signer funderAddress, signature type 0 for EOA
+  const clobClient = new ClobClient({ signer, creds });
 
   // Place an order
   const order = await clobClient.createAndPostOrder(
@@ -124,15 +117,9 @@ function TradingComponent() {
   if (authenticated) {
     const provider = await getEthereumProvider();
     const signer = createSignerForProvider(provider);
-    const funder = await signer.getAddress();
 
     const creds = await new ClobClient({ signer }).createOrDeriveApiKey();
-    const clobClient = new ClobClient({
-      signer,
-      creds,
-      signatureType: 0,
-      funderAddress: funder,
-    });
+    const clobClient = new ClobClient({ signer, creds });
 
     // Use clobClient for trading...
   }
