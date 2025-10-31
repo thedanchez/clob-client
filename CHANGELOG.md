@@ -1,5 +1,12 @@
 # @dschz/polymarket-clob-client
 
+## 0.4.2
+
+### Patch Changes
+
+- Updates package keywords to improve npm discoverability
+- Updates README to outline default value configuration for client
+
 ## 0.4.1
 
 ### Patch Changes
