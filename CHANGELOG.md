@@ -1,5 +1,11 @@
 # @dschz/polymarket-clob-client
 
+## 0.4.1
+
+### Patch Changes
+
+- Removes incorrect Vite configuration info from README
+
 ## 0.4.0
 
 ### Minor Changes
