@@ -1,5 +1,11 @@
 # @dschz/polymarket-clob-client
 
+## 0.4.0
+
+### Minor Changes
+
+- Update ClobClient constructor signature to take object and update README
+
 ## 0.3.0
 
 ### Minor Changes
