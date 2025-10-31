@@ -154,52 +154,56 @@ export const createSignerForProvider = (provider: EIP1193Provider): JsonRpcSigne
   return p.getSigner();
 };
 
+type ClobClientConfig = {
+  /** The host of the CLOB API (default: https://clob.polymarket.com) */
+  readonly host?: string;
+  /** The chain ID of the CLOB API (default: Polygon 137) */
+  readonly chainId?: number;
+  /** The signer to use for Level 1 authentication */
+  readonly signer?: Wallet | JsonRpcSigner;
+  /** The credentials to use for Level 2 authentication */
+  readonly creds?: ApiKeyCreds;
+  /** The signature type to use for authentication (default: EOA) */
+  readonly signatureType?: SignatureType;
+  readonly funderAddress?: string;
+  readonly geoBlockToken?: string;
+  readonly useServerTime?: boolean;
+  readonly builderConfig?: BuilderConfig;
+  readonly getSigner?: () => Promise<Wallet | JsonRpcSigner> | (Wallet | JsonRpcSigner);
+};
+
 export class ClobClient {
   readonly host: string;
-
-  readonly chainId: Chain;
-
-  // Used to perform Level 1 authentication and sign orders
+  readonly chainId: number;
   readonly signer?: Wallet | JsonRpcSigner;
-
-  // Used to perform Level 2 authentication
   readonly creds?: ApiKeyCreds;
-
   readonly orderBuilder: OrderBuilder;
-
   readonly tickSizes: TickSizes;
-
   readonly negRisk: NegRisk;
-
   readonly feeRates: FeeRates;
-
   readonly geoBlockToken?: string;
-
   readonly useServerTime?: boolean;
-
   readonly builderConfig?: BuilderConfig;
 
-  constructor(
-    host: string,
-    chainId: Chain,
-    signer?: Wallet | JsonRpcSigner,
-    creds?: ApiKeyCreds,
-    signatureType?: SignatureType,
-    funderAddress?: string,
-    geoBlockToken?: string,
-    useServerTime?: boolean,
-    builderConfig?: BuilderConfig,
-    getSigner?: () => Promise<Wallet | JsonRpcSigner> | (Wallet | JsonRpcSigner),
-  ) {
+  constructor(config: ClobClientConfig) {
+    const {
+      host = "https://clob.polymarket.com",
+      chainId = Chain.POLYGON,
+      signer,
+      creds,
+      signatureType,
+      funderAddress,
+      geoBlockToken,
+      useServerTime,
+      builderConfig,
+      getSigner,
+    } = config;
+
     this.host = host.endsWith("/") ? host.slice(0, -1) : host;
     this.chainId = chainId;
+    this.signer = signer;
+    this.creds = creds;
 
-    if (signer !== undefined) {
-      this.signer = signer;
-    }
-    if (creds !== undefined) {
-      this.creds = creds;
-    }
     this.orderBuilder = new OrderBuilder(
       signer as Wallet | JsonRpcSigner,
       chainId,
@@ -207,14 +211,13 @@ export class ClobClient {
       funderAddress,
       getSigner,
     );
+
     this.tickSizes = {};
     this.negRisk = {};
     this.feeRates = {};
     this.geoBlockToken = geoBlockToken;
     this.useServerTime = useServerTime;
-    if (builderConfig !== undefined) {
-      this.builderConfig = builderConfig;
-    }
+    this.builderConfig = builderConfig;
   }
 
   // Public endpoints
@@ -370,6 +373,18 @@ export class ClobClient {
     });
   }
 
+  // Private utils
+  private async _getL2Headers(headerArgs: L2HeaderArgs): Promise<L2PolyHeader> {
+    const headers = await createL2Headers(
+      this.signer as Wallet | JsonRpcSigner,
+      this.creds as ApiKeyCreds,
+      headerArgs,
+      this.useServerTime ? await this.getServerTime() : undefined,
+    );
+
+    return headers;
+  }
+
   // L1 Authed
 
   /**
@@ -380,7 +395,6 @@ export class ClobClient {
   public async createApiKey(nonce?: number): Promise<ApiKeyCreds> {
     this.canL1Auth();
 
-    const endpoint = `${this.host}${CREATE_API_KEY}`;
     const headers = await createL1Headers(
       this.signer as Wallet | JsonRpcSigner,
       this.chainId,
@@ -388,14 +402,15 @@ export class ClobClient {
       this.useServerTime ? await this.getServerTime() : undefined,
     );
 
-    return await this.post(endpoint, { headers }).then((apiKeyRaw: ApiKeyRaw) => {
-      const apiKey: ApiKeyCreds = {
-        key: apiKeyRaw.apiKey,
-        secret: apiKeyRaw.secret,
-        passphrase: apiKeyRaw.passphrase,
-      };
-      return apiKey;
-    });
+    const apiKeyRaw = (await this.post(`${this.host}${CREATE_API_KEY}`, { headers })) as ApiKeyRaw;
+
+    const apiKey = {
+      key: apiKeyRaw.apiKey,
+      secret: apiKeyRaw.secret,
+      passphrase: apiKeyRaw.passphrase,
+    } as ApiKeyCreds;
+
+    return apiKey;
   }
 
   /**
@@ -406,7 +421,6 @@ export class ClobClient {
   public async deriveApiKey(nonce?: number): Promise<ApiKeyCreds> {
     this.canL1Auth();
 
-    const endpoint = `${this.host}${DERIVE_API_KEY}`;
     const headers = await createL1Headers(
       this.signer as Wallet | JsonRpcSigner,
       this.chainId,
@@ -414,40 +428,32 @@ export class ClobClient {
       this.useServerTime ? await this.getServerTime() : undefined,
     );
 
-    return await this.get(endpoint, { headers }).then((apiKeyRaw: ApiKeyRaw) => {
-      const apiKey: ApiKeyCreds = {
-        key: apiKeyRaw.apiKey,
-        secret: apiKeyRaw.secret,
-        passphrase: apiKeyRaw.passphrase,
-      };
-      return apiKey;
-    });
+    const apiKeyRaw = (await this.get(`${this.host}${DERIVE_API_KEY}`, { headers })) as ApiKeyRaw;
+
+    const apiKey = {
+      key: apiKeyRaw.apiKey,
+      secret: apiKeyRaw.secret,
+      passphrase: apiKeyRaw.passphrase,
+    } as ApiKeyCreds;
+
+    return apiKey;
   }
 
   public async createOrDeriveApiKey(nonce?: number): Promise<ApiKeyCreds> {
-    return this.createApiKey(nonce).then((response) => {
-      if (!response.key) {
-        return this.deriveApiKey(nonce);
-      }
-      return response;
-    });
+    const response = await this.createApiKey(nonce);
+    if (!response.key) return this.deriveApiKey(nonce);
+    return response;
   }
 
   public async getApiKeys(): Promise<ApiKeysResponse> {
     this.canL2Auth();
 
     const endpoint = GET_API_KEYS;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: GET,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     return this.get(`${this.host}${endpoint}`, { headers });
   }
@@ -456,17 +462,11 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = CLOSED_ONLY;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: GET,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     return this.get(`${this.host}${endpoint}`, { headers });
   }
@@ -475,17 +475,11 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = DELETE_API_KEY;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: DELETE,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     return this.del(`${this.host}${endpoint}`, { headers });
   }
@@ -494,17 +488,11 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = `${GET_ORDER}${orderID}`;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: GET,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     return this.get(`${this.host}${endpoint}`, { headers });
   }
@@ -517,17 +505,11 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = GET_TRADES;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: GET,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     let results: Trade[] = [];
     next_cursor = next_cursor || INITIAL_CURSOR;
@@ -553,17 +535,11 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = GET_TRADES;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: GET,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     next_cursor = next_cursor || INITIAL_CURSOR;
 
@@ -627,17 +603,11 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = GET_NOTIFICATIONS;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: GET,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     return this.get(`${this.host}${endpoint}`, {
       headers,
@@ -673,17 +643,11 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = GET_BALANCE_ALLOWANCE;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: GET,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     const _params = {
       ...params,
@@ -697,17 +661,11 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = UPDATE_BALANCE_ALLOWANCE;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: GET,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     const _params = {
       ...params,
@@ -987,17 +945,11 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = IS_ORDER_SCORING;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: GET,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     return this.get(`${this.host}${endpoint}`, { headers, params });
   }
@@ -1007,18 +959,12 @@ export class ClobClient {
 
     const endpoint = ARE_ORDERS_SCORING;
     const payload = JSON.stringify(params?.orderIds);
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: POST,
       requestPath: endpoint,
       body: payload,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     return this.post(`${this.host}${endpoint}`, {
       headers,
@@ -1031,17 +977,11 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = GET_EARNINGS_FOR_USER_FOR_DAY;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: GET,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     let results: UserEarning[] = [];
     let next_cursor = INITIAL_CURSOR;
@@ -1066,27 +1006,18 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = GET_TOTAL_EARNINGS_FOR_USER_FOR_DAY;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: GET,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     const params = {
       date,
       signature_type: this.orderBuilder.signatureType,
     };
 
-    return await this.get(`${this.host}${endpoint}`, {
-      headers,
-      params,
-    });
+    return await this.get(`${this.host}${endpoint}`, { headers, params });
   }
 
   public async getUserEarningsAndMarketsConfig(
@@ -1098,17 +1029,11 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = GET_REWARDS_EARNINGS_PERCENTAGES;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: GET,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     let results: UserRewardsEarning[] = [];
     let next_cursor = INITIAL_CURSOR;
@@ -1136,17 +1061,11 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = GET_LIQUIDITY_REWARD_PERCENTAGES;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: GET,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     const _params = {
       signature_type: this.orderBuilder.signatureType,
@@ -1212,17 +1131,11 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = CREATE_BUILDER_API_KEY;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: POST,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     return this.post(`${this.host}${endpoint}`, { headers });
   }
@@ -1231,17 +1144,11 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = GET_BUILDER_API_KEYS;
-    const headerArgs = {
+
+    const headers = await this._getL2Headers({
       method: GET,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      headerArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     return this.get(`${this.host}${endpoint}`, { headers });
   }
