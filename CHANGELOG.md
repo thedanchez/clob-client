@@ -1,5 +1,11 @@
 # @dschz/polymarket-clob-client
 
+## 0.4.3
+
+### Patch Changes
+
+- Update readme and add package repo info
+
 ## 0.4.2
 
 ### Patch Changes
