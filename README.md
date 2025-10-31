@@ -37,22 +37,12 @@ yarn install buffer events
 bun install buffer events
 ```
 
-Then update your `vite.config.ts`:
+Then update your `vite.config.ts` to help the dev server reference the `buffer` polyfill:
 
 ```ts
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  build: {
-    target: "esnext",
-    rollupOptions: {
-      external: (id) => {
-        const EXTERNAL_NODE_LIBS = ["crypto", "http", "https", "zlib", "url", "fs", "path", "os"];
-        // Don't externalize buffer and events - we have polyfills
-        return ["buffer", "events"].includes(id) ? false : EXTERNAL_NODE_LIBS.includes(id);
-      },
-    },
-  },
   // When running your Vite dev server, you may see browser warnings regarding Buffer.
   // The optimizeDeps and resolve aliases for buffer should take care of them
   optimizeDeps: {
@@ -67,8 +57,6 @@ export default defineConfig({
   },
 });
 ```
-
-This configuration ensures proper polyfills for Node.js modules that ethers and cryptographic dependencies rely on, while maintaining optimal bundle sizes for browser deployment. The `buffer` polyfill is essential for signature operations and cryptographic functions, while `events` enables proper event handling in browser environments.
 
 ## Usage
 
