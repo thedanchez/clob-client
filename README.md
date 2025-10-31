@@ -5,9 +5,9 @@
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/@dschz/polymarket-clob-client)](https://bundlephobia.com/package/@dschz/polymarket-clob-client)
 [![CI](https://github.com/dsnchz/polymarket-clob-client/actions/workflows/ci.yaml/badge.svg)](https://github.com/dsnchz/polymarket-clob-client/actions/workflows/ci.yaml)
 
-Fork of [Polymarket CLOB Client](https://github.com/Polymarket/clob-client).
+> Fork of Polymarket CLOB Client: [GitHub](https://github.com/Polymarket/clob-client) / [NPM](https://www.npmjs.com/package/@polymarket/clob-client)
 
-Typescript client for the Polymarket CLOB
+Typescript client for the Polymarket Central Limit Order Book (CLOB) API.
 
 ## What's Different in This Fork
 
@@ -57,6 +57,17 @@ export default defineConfig({
   },
 });
 ```
+
+## Configuration Defaults
+
+> 💡 When creating a `ClobClient` instance, the following defaults are used for unspecified parameters:
+>
+> - **host**: `"https://clob.polymarket.com"` (Polymarket production API)
+> - **chainId**: `137` (Polygon mainnet)
+> - **signatureType**: `0` (EOA - Externally Owned Account)
+> - **funderAddress**: Defaults to the `signer` address when not provided
+>
+> This means you can create a minimal, _read-only_ client with just `new ClobClient()` which will hit Polygon mainnet. If you want to place trades on mainnet, then you need to configure both `signer` and `creds` via `new ClobClient({ signer, creds })` which you can see the usage examples configure below.
 
 ## Usage
 

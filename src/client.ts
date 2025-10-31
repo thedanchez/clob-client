@@ -163,12 +163,25 @@ type ClobClientConfig = {
   readonly signer?: Wallet | JsonRpcSigner;
   /** The credentials to use for Level 2 authentication */
   readonly creds?: ApiKeyCreds;
-  /** The signature type to use for authentication (default: EOA) */
+  /**
+   * The signature type to use for authentication (default: `SignatureType.EOA`)
+   * @see {@link SignatureType}
+   */
   readonly signatureType?: SignatureType;
+  /**
+   * The address to use as the funder for the order (default: `signer.getAddress()`)
+   */
   readonly funderAddress?: string;
   readonly geoBlockToken?: string;
   readonly useServerTime?: boolean;
   readonly builderConfig?: BuilderConfig;
+  /**
+   * Optional function to dynamically resolve the signer.
+   * If provided, this function will be called to obtain a fresh signer instance
+   * (e.g., for smart contract wallets or when the signer may change).
+   * Should return a `Wallet` or `JsonRpcSigner`, or a `Promise` resolving to one.
+   * If not provided, the static `signer` property is used.
+   */
   readonly getSigner?: () => Promise<Wallet | JsonRpcSigner> | (Wallet | JsonRpcSigner);
 };
 
@@ -185,13 +198,13 @@ export class ClobClient {
   readonly useServerTime?: boolean;
   readonly builderConfig?: BuilderConfig;
 
-  constructor(config: ClobClientConfig) {
+  constructor(config: ClobClientConfig = {}) {
     const {
       host = "https://clob.polymarket.com",
       chainId = Chain.POLYGON,
       signer,
       creds,
-      signatureType,
+      signatureType = SignatureType.EOA,
       funderAddress,
       geoBlockToken,
       useServerTime,
@@ -619,17 +632,11 @@ export class ClobClient {
     this.canL2Auth();
 
     const endpoint = DROP_NOTIFICATIONS;
-    const l2HeaderArgs = {
+
+    const headers = await this._getL2Headers({
       method: DELETE,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      l2HeaderArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     return this.del(`${this.host}${endpoint}`, {
       headers,
@@ -769,17 +776,11 @@ export class ClobClient {
   ): Promise<OpenOrdersResponse> {
     this.canL2Auth();
     const endpoint = GET_OPEN_ORDERS;
-    const l2HeaderArgs = {
+
+    const headers = await this._getL2Headers({
       method: GET,
       requestPath: endpoint,
-    };
-
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      l2HeaderArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    });
 
     let results: OpenOrder[] = [];
     next_cursor = next_cursor || INITIAL_CURSOR;
@@ -813,12 +814,7 @@ export class ClobClient {
       body: JSON.stringify(orderPayload),
     };
 
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      l2HeaderArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    const headers = await this._getL2Headers(l2HeaderArgs);
 
     // builders flow
     if (this.canBuilderAuth()) {
@@ -849,12 +845,7 @@ export class ClobClient {
       body: JSON.stringify(ordersPayload),
     };
 
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      l2HeaderArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
+    const headers = await this._getL2Headers(l2HeaderArgs);
 
     // builders flow
     if (this.canBuilderAuth()) {
@@ -873,71 +864,51 @@ export class ClobClient {
   public async cancelOrder(payload: OrderPayload): Promise<any> {
     this.canL2Auth();
     const endpoint = CANCEL_ORDER;
-    const l2HeaderArgs = {
+
+    const headers = await this._getL2Headers({
       method: DELETE,
       requestPath: endpoint,
       body: JSON.stringify(payload),
-    };
+    });
 
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      l2HeaderArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
     return this.del(`${this.host}${endpoint}`, { headers, data: payload });
   }
 
   public async cancelOrders(ordersHashes: string[]): Promise<any> {
     this.canL2Auth();
     const endpoint = CANCEL_ORDERS;
-    const l2HeaderArgs = {
+
+    const headers = await this._getL2Headers({
       method: DELETE,
       requestPath: endpoint,
       body: JSON.stringify(ordersHashes),
-    };
+    });
 
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      l2HeaderArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
     return this.del(`${this.host}${endpoint}`, { headers, data: ordersHashes });
   }
 
   public async cancelAll(): Promise<any> {
     this.canL2Auth();
     const endpoint = CANCEL_ALL;
-    const l2HeaderArgs = {
+
+    const headers = await this._getL2Headers({
       method: DELETE,
       requestPath: endpoint,
-    };
+    });
 
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      l2HeaderArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
     return this.del(`${this.host}${endpoint}`, { headers });
   }
 
   public async cancelMarketOrders(payload: OrderMarketCancelParams): Promise<any> {
     this.canL2Auth();
     const endpoint = CANCEL_MARKET_ORDERS;
-    const l2HeaderArgs = {
+
+    const headers = await this._getL2Headers({
       method: DELETE,
       requestPath: endpoint,
       body: JSON.stringify(payload),
-    };
+    });
 
-    const headers = await createL2Headers(
-      this.signer as Wallet | JsonRpcSigner,
-      this.creds as ApiKeyCreds,
-      l2HeaderArgs,
-      this.useServerTime ? await this.getServerTime() : undefined,
-    );
     return this.del(`${this.host}${endpoint}`, { headers, data: payload });
   }
 
