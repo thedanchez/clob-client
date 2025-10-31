@@ -9,6 +9,14 @@ Fork of [Polymarket CLOB Client](https://github.com/Polymarket/clob-client).
 
 Typescript client for the Polymarket CLOB
 
+## What's Different in This Fork
+
+This fork provides several key improvements over the original:
+
+- **Runtime-Adaptive Crypto APIs**: Dynamically uses the appropriate cryptographic APIs based on the runtime environment (Node.js vs browser), ensuring optimal compatibility and performance
+- **Optimized Bundle Size**: Significantly reduced bundle size for browser applications - approximately 50% smaller than the original package, making it ideal for web dApps with strict size constraints
+- **Enhanced Web3 Integration**: Added utilities like `createSignerForProvider` that provide seamless integration with native EIP-1193 providers (MetaMask, WalletConnect, etc.) without requiring additional adapter libraries
+
 ## Installation
 
 ```bash
@@ -18,7 +26,51 @@ yarn install @dschz/polymarket-clob-client
 bun install @dschz/polymarket-clob-client
 ```
 
-### Usage
+### Web dApps / Vite Configuration
+
+When bundling with Vite, you'll need to add Node.js polyfills for cryptographic operations and event handling. The library's underlying dependencies (ethers, crypto libraries) require `buffer` and `events` polyfills to function properly in browser environments. Install the required polyfills:
+
+```bash
+npm install buffer events
+pnpm install buffer events
+yarn install buffer events
+bun install buffer events
+```
+
+Then update your `vite.config.ts`:
+
+```ts
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  build: {
+    target: "esnext",
+    rollupOptions: {
+      external: (id) => {
+        const EXTERNAL_NODE_LIBS = ["crypto", "http", "https", "zlib", "url", "fs", "path", "os"];
+        // Don't externalize buffer and events - we have polyfills
+        return ["buffer", "events"].includes(id) ? false : EXTERNAL_NODE_LIBS.includes(id);
+      },
+    },
+  },
+  // When running your Vite dev server, you may see browser warnings regarding Buffer.
+  // The optimizeDeps and resolve aliases for buffer should take care of them
+  optimizeDeps: {
+    include: ["buffer"],
+  },
+  resolve: {
+    conditions: ["development", "browser"],
+    alias: {
+      buffer: "buffer/",
+      "node:buffer": "buffer/",
+    },
+  },
+});
+```
+
+This configuration ensures proper polyfills for Node.js modules that ethers and cryptographic dependencies rely on, while maintaining optimal bundle sizes for browser deployment. The `buffer` polyfill is essential for signature operations and cryptographic functions, while `events` enables proper event handling in browser environments.
+
+## Usage
 
 #### Browser Environment with Wallet Providers
 
@@ -32,16 +84,18 @@ import {
   Side,
 } from "@dschz/polymarket-clob-client";
 
-const host = "https://clob.polymarket.com";
-const chainId = 137; // Polygon mainnet
-
 // Example 1: MetaMask
 if (window.ethereum) {
   const signer = createSignerForProvider(window.ethereum);
   const funder = await signer.getAddress(); // Use connected wallet address
 
-  const creds = await new ClobClient(host, chainId, signer).createOrDeriveApiKey();
-  const clobClient = new ClobClient(host, chainId, signer, creds, 0, funder);
+  const creds = await new ClobClient({ signer }).createOrDeriveApiKey();
+  const clobClient = new ClobClient({
+    signer,
+    creds,
+    signatureType: 0,
+    funderAddress: funder,
+  });
 
   // Place an order
   const order = await clobClient.createAndPostOrder(
@@ -55,29 +109,6 @@ if (window.ethereum) {
     OrderType.GTC,
   );
 }
-```
-
-#### With Viem
-
-If you're using [viem](https://viem.sh/) as your Ethereum library, the client seamlessly supports viem providers:
-
-```ts
-import { createWalletClient, custom } from "viem";
-import { polygon } from "viem/chains";
-import { ClobClient, createSignerForProvider } from "@dschz/polymarket-clob-client";
-
-// Create viem wallet client
-const walletClient = createWalletClient({
-  chain: polygon,
-  transport: custom(window.ethereum),
-});
-
-// Convert viem provider to ethers signer
-const signer = createSignerForProvider(walletClient.transport);
-const funder = await signer.getAddress();
-
-const creds = await new ClobClient(host, 137, signer).createOrDeriveApiKey();
-const clobClient = new ClobClient(host, 137, signer, creds, 0, funder);
 ```
 
 #### With Privy
@@ -96,8 +127,13 @@ function TradingComponent() {
     const signer = createSignerForProvider(provider);
     const funder = await signer.getAddress();
 
-    const creds = await new ClobClient(host, 137, signer).createOrDeriveApiKey();
-    const clobClient = new ClobClient(host, 137, signer, creds, 0, funder);
+    const creds = await new ClobClient({ signer }).createOrDeriveApiKey();
+    const clobClient = new ClobClient({
+      signer,
+      creds,
+      signatureType: 0,
+      funderAddress: funder,
+    });
 
     // Use clobClient for trading...
   }
@@ -112,12 +148,16 @@ For server-side or Node.js applications with private keys:
 import { ClobClient, OrderType, Side } from "@dschz/polymarket-clob-client";
 import { Wallet } from "@ethersproject/wallet";
 
-const host = "https://clob.polymarket.com";
 const funder = "0x..."; // Your Polymarket Profile Address
 const signer = new Wallet("your-private-key"); // Your private key
 
-const creds = await new ClobClient(host, 137, signer).createOrDeriveApiKey();
-const clobClient = new ClobClient(host, 137, signer, creds, 1, funder);
+const creds = await new ClobClient({ signer }).createOrDeriveApiKey();
+const clobClient = new ClobClient({
+  signer,
+  creds,
+  signatureType: 1,
+  funderAddress: funder,
+});
 
 const order = await clobClient.createAndPostOrder(
   {
