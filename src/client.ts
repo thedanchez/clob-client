@@ -73,7 +73,7 @@ import {
   POST,
   post,
   type RequestOptions,
-} from "./http-helpers";
+} from "./http";
 import { OrderBuilder } from "./order-builder/builder";
 import { calculateBuyMarketPrice, calculateSellMarketPrice } from "./order-builder/helpers";
 import {

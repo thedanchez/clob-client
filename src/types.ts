@@ -1,5 +1,6 @@
 import { SignatureType, type SignedOrder } from "@dschz/polymarket-clob-order-utils";
-import type { AxiosRequestHeaders } from "axios";
+
+type RequestHeaders = Record<string, string>;
 
 export interface ApiKeyCreds {
   key: string;
@@ -20,7 +21,7 @@ export interface L2HeaderArgs {
 }
 
 // EIP712 sig verification
-export interface L1PolyHeader extends AxiosRequestHeaders {
+export interface L1PolyHeader extends RequestHeaders {
   POLY_ADDRESS: string;
   POLY_SIGNATURE: string;
   POLY_TIMESTAMP: string;
@@ -28,7 +29,7 @@ export interface L1PolyHeader extends AxiosRequestHeaders {
 }
 
 // API key verification
-export interface L2PolyHeader extends AxiosRequestHeaders {
+export interface L2PolyHeader extends RequestHeaders {
   POLY_ADDRESS: string;
   POLY_SIGNATURE: string;
   POLY_TIMESTAMP: string;

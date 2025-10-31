@@ -1,10 +1,22 @@
 import { Side as UtilsSide, type SignedOrder } from "@dschz/polymarket-clob-order-utils";
 
+import { createHash } from "./crypto";
 import { type NewOrder, type OrderBookSummary, OrderType, Side, type TickSize } from "./types";
-import { createHash } from "./utils/crypto";
 
 export const isBrowser = () => {
   return typeof window !== "undefined" && typeof window.document !== "undefined";
+};
+
+export const toSearchParams = (params: Record<string, string>) => {
+  const searchParams = new URLSearchParams();
+
+  Object.keys(params).forEach((key) => {
+    if (params[key] !== undefined && params[key] !== null) {
+      searchParams.append(key, String(params[key]));
+    }
+  });
+
+  return searchParams.toString();
 };
 
 export function orderToJson<T extends OrderType>(
