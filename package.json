@@ -1,7 +1,7 @@
 {
   "name": "@dschz/polymarket-clob-client",
   "description": "Typescript client for Polymarket's CLOB",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "author": "Daniel Sanchez <dsanc89@pm.me>",
   "license": "MIT",
   "type": "module",

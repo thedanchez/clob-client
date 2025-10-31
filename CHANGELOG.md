@@ -1,5 +1,11 @@
 # @dschz/polymarket-clob-client
 
+## 0.3.0
+
+### Minor Changes
+
+- Replace axios dependency with native fetch
+
 ## 0.2.3
 
 ### Patch Changes
