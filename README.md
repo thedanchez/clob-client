@@ -13,9 +13,9 @@ Typescript client for the Polymarket Central Limit Order Book (CLOB) API.
 
 This fork provides several key improvements over the original:
 
-- **Runtime-Adaptive Crypto APIs**: Dynamically uses the appropriate cryptographic APIs based on the runtime environment (Node.js vs browser), ensuring optimal compatibility and performance
-- **Optimized Bundle Size**: Significantly reduced bundle size for browser applications - approximately 50% smaller than the original package, making it ideal for web dApps with strict size constraints
-- **Enhanced Web3 Integration**: Added utilities like `createSignerForProvider` that provide seamless integration with native EIP-1193 providers (MetaMask, WalletConnect, etc.) without requiring additional adapter libraries
+- **Polymorphic Crypto APIs**: Dynamically uses the appropriate cryptographic APIs based on the runtime environment (Node.js vs browser), ensuring optimal compatibility and performance.
+- **Optimized Bundle Size**: Significantly reduced bundle size for browser applications - approximately 50% smaller than the original package, making it ideal for web dApps with strict size constraints.
+- **Enhanced Web3 Integration**: Added utilities like `createSignerForProvider` that provide seamless integration with native EIP-1193 providers (MetaMask, WalletConnect, etc.) without requiring additional adapter libraries.
 
 ## Installation
 
@@ -25,6 +25,12 @@ pnpm install @dschz/polymarket-clob-client
 yarn install @dschz/polymarket-clob-client
 bun install @dschz/polymarket-clob-client
 ```
+
+### Server Side (Node.js)
+
+Node v18.0+ is required as this library uses native `fetch` APIs under the hood.
+
+> As of this writing (Nov. 2025), I would recommend using the latest Node v24.11.0+ LTS which will receive maintenance and updates until April 2028.
 
 ### Web dApps / Vite Configuration
 
@@ -83,6 +89,7 @@ import {
 
 // Example 1: MetaMask
 if (window.ethereum) {
+  // Pass any object conforming to the EIP-1193 provider spec
   const signer = createSignerForProvider(window.ethereum);
   // Get API key derived from signer for Polygon mainnet
   const creds = await new ClobClient({ signer }).createOrDeriveApiKey();
