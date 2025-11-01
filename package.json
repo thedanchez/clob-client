@@ -1,7 +1,7 @@
 {
   "name": "@dschz/polymarket-clob-client",
   "description": "Fork of Polymarket CLOB Client with optimized bundle size and enhanced Web3 integration",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "author": "Daniel Sanchez <dsanc89@pm.me>",
   "license": "MIT",
   "type": "module",

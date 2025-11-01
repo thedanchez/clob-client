@@ -1,5 +1,11 @@
 # @dschz/polymarket-clob-client
 
+## 0.4.4
+
+### Patch Changes
+
+- Add server section to README
+
 ## 0.4.3
 
 ### Patch Changes
